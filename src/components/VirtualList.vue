@@ -155,6 +155,7 @@ export default {
       start:0,
       //结束索引
       end:0,
+      initStart: false
     };
   },
   computed:{
@@ -204,10 +205,26 @@ export default {
     // window.vm = this;
   },
   mounted() {
-    this.screenHeight = this.$el.clientHeight;
-    this.start = 0;
-    this.end = this.start + this.visibleCount;
-    this.setStartOffset();
+    //
+    const init = setInterval(() => {
+      if(!this.initStart) {
+        console.log("VL mounted ")
+        console.log("VL $el ", this.$el)
+        console.log("VL this.$el.clientHeight ", this.$el.clientHeight)
+        console.log("VL this.$refs.parent.clientHeight ", this.$refs.parent.clientHeight)
+
+        this.screenHeight = this.$el.clientHeight;
+        console.log("VL this.screenHeight ", this.screenHeight)
+        this.start = 0;
+        this.end = this.start + this.visibleCount;
+        this.setStartOffset();
+        if( this.$el.clientHeight) {
+          this.initStart = true
+          clearInterval(init)
+        }
+      }
+    }, 100)
+
 
     //添加拖拽事件
     if(this.topLoadMore){
