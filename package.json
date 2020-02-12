@@ -1,7 +1,7 @@
 {
-  "name": "vue-virtual-listview",
+  "name": "vue-virtual-listview-fork",
   "version": "1.1.0",
-  "description": "vue-virtual-listview",
+  "description": "fork of vue-virtual-listview",
   "main": "dist/index.min.js",
   "dependencies": {
     "@babel/core": "^7.6.4",
@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chenqf/vue-virtual-listview.git"
+    "url": "git+https://github.com/kulnaura/vue-virtual-listview.git"
   },
   "keywords": [
     "vue",
@@ -38,7 +38,7 @@
   "author": "chenqf",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/chenqf/vue-virtual-listview/issues"
+    "url": "https://github.com/kulnaura/vue-virtual-listview/issues"
   },
-  "homepage": "https://github.com/chenqf/vue-virtual-listview#readme"
+  "homepage": "https://github.com/kulnaura/vue-virtual-listview#readme"
 }
