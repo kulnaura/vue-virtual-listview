@@ -376,7 +376,9 @@ export default {
         startOffset = 0;
       }
       this.startOffset = startOffset;
-      this.$refs.content.style.transform = `translate3d(0,${startOffset}px,0)`
+      //TODO: FIX when we have no init content block
+      if(this.$refs.content)
+        this.$refs.content.style.transform = `translate3d(0,${startOffset}px,0)`
     },
     //滚动事件
     scrollEvent(event) {
