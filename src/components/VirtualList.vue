@@ -40,8 +40,8 @@
           </div> 
         </template>
         <!-- 空占位 -->
-        <template v-if="row.value.length < column">
-          <div v-for="(item,index) in (column - row.value.length%column)" class="infinite-item" :key="'empty-' + index">
+        <template v-if="row.value.length < getColumn">
+          <div v-for="(item,index) in (getColumn - row.value.length%getColumn)" class="infinite-item" :key="'empty-' + index">
           </div> 
         </template>
       </div>
@@ -69,7 +69,7 @@ export default {
     },
     //列表列数
     column:{
-      type:Number,
+      type: [Number, String, Array],
       default:1
     },
     //是否开启下拉刷新
@@ -155,16 +155,37 @@ export default {
       start:0,
       //结束索引
       end:0,
-      initStart: false
+      initStart: false,
+      windowWidth: 0
     };
   },
   computed:{
+    getColumn() {
+      let column = 1;
+      if(this.column) {
+        if(typeof this.column === 'number' || typeof this.column === 'string') {
+          if(Number.isInteger(parseInt(this.column)))
+            column = parseInt(this.column)
+        }
+        if(Array.isArray(this.column)) {
+          for(let i = 0; i < this.column.length; i++) {
+            if(this.column[i].width > this.windowWidth) {
+              break;
+            }
+            column = this.column[i].column
+          }
+        }
+      }
+      console.log("column prop => ", this.column);
+      console.log("column result => ", column);
+      return column
+    },
     _listData(){
       return this.listData.reduce((init,cur,index)=>{
-        if(index % this.column === 0){
+        if(index % this.getColumn === 0){
           init.push({
             // _转换后的索引_第一项在原列表中的索引_本行包含几列
-            _key:`_${index/this.column}_${index}_${this.column}`,
+            _key:`_${index/this.getColumn}_${index}_${this.getColumn}`,
             value:[cur]
           })
         }else{
@@ -205,26 +226,24 @@ export default {
     // window.vm = this;
   },
   mounted() {
-    //
+    this.start = 0;
+    this.setWindowWidth();
+    if(this.$el && this.$el.clientHeight)
+      this.initStart = true;
+
+    // added hack to set starting variables after initializing parent element height
     const init = setInterval(() => {
       if(!this.initStart) {
-        console.log("VL mounted ")
-        console.log("VL $el ", this.$el)
-        console.log("VL this.$el.clientHeight ", this.$el.clientHeight)
-        console.log("VL this.$refs.parent.clientHeight ", this.$refs.parent.clientHeight)
-
-        this.screenHeight = this.$el.clientHeight;
-        console.log("VL this.screenHeight ", this.screenHeight)
-        this.start = 0;
-        this.end = this.start + this.visibleCount;
-        this.setStartOffset();
-        if( this.$el.clientHeight) {
-          this.initStart = true
+        if(this.$el && this.$el.clientHeight) {
+          this.initStart = true;
+          this.initStaringParams();
           clearInterval(init)
         }
+      } else {
+        this.initStaringParams();
+        clearInterval(init)
       }
-    }, 100)
-
+    }, 100);
 
     //添加拖拽事件
     if(this.topLoadMore){
@@ -232,6 +251,10 @@ export default {
       this.$refs.list.addEventListener('touchmove',this.touchMoveEvent)
       this.$refs.list.addEventListener('touchend',this.touchEndEvent)
     }
+
+    //added resize event listener that change windowWidth variable and after that getColumn recalculated
+    if(Array.isArray(this.column))
+      window.addEventListener('resize', this.setWindowWidth);
   },
   beforeDestroy(){
     if(this.topLoadMore){
@@ -256,12 +279,20 @@ export default {
       this.updateItemsSize(); 
       //更新列表总高度
       let height = this.positions[this.positions.length - 1].bottom;
-      this.$refs.phantom.style.height = height + 'px'
+      this.$refs.phantom.style.height = height + 'px';
       //更新真实偏移量
       this.setStartOffset();
     })
   },
   methods: {
+    initStaringParams() {
+      this.screenHeight = this.$el.clientHeight;
+      this.end = this.start + this.visibleCount;
+      this.setStartOffset();
+    },
+    setWindowWidth() {
+      this.windowWidth = document.documentElement.clientWidth;
+    },
     //设定滚动状态
     setScrollState(flg = false){
       this.scrolling = flg;
@@ -362,16 +393,16 @@ export default {
       }
       //触发外部滚动事件
       this.scrollingEvent(event,{
-          start:this.start * this.column,
-          end:Math.min(this.end * this.column,this.listData.length - 1),
+          start:this.start * this.getColumn,
+          end:Math.min(this.end * this.getColumn,this.listData.length - 1),
           startOffset:this.startOffset,
           scrollTop
         }
       )
       //防抖处理滚动结束
       this.scrollEnd(event,{
-          start:this.start * this.column,
-          end:Math.min(this.end * this.column,this.listData.length - 1),
+          start:this.start * this.getColumn,
+          end:Math.min(this.end * this.getColumn,this.listData.length - 1),
           startOffset:this.startOffset,
           scrollTop
         }
