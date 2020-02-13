@@ -71,6 +71,7 @@ export default {
     column:{
       type: [Number, String, Array],
       default:1
+      //array example: [{width: 500, column: 1}, ...]
     },
     //是否开启下拉刷新
     topLoadMore:{
@@ -176,6 +177,7 @@ export default {
           }
         }
       }
+      console.log("this.windowWidth => ", this.windowWidth)
       console.log("column prop => ", this.column);
       console.log("column result => ", column);
       return column
