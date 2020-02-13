@@ -1,6 +1,6 @@
 {
   "name": "vue-virtual-listview-fork",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "fork of vue-virtual-listview",
   "main": "dist/index.min.js",
   "dependencies": {
