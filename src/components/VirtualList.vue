@@ -177,9 +177,6 @@ export default {
           }
         }
       }
-      console.log("this.windowWidth => ", this.windowWidth)
-      console.log("column prop => ", this.column);
-      console.log("column result => ", column);
       return column
     },
     _listData(){
